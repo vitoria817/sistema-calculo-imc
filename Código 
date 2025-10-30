@@ -1,0 +1,263 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        final int MENU_CADASTRAR = 1;
+        final int MENU_LISTAR = 2;
+        final int MENU_EXCLUIR = 3;
+        final int MENU_LISTAR_IMC_ACIMA_27 = 4;
+        final int MENU_LISTAR_IMC_ABAIXO_18 = 5;
+        final int MENU_LISTAR_IMC_ENTRE_18_22 = 6;
+        final int MENU_EDITAR = 7;
+
+        Scanner entrada = new Scanner(System.in);
+        entrada.useLocale(Locale.US);
+
+        List<Pessoa> listaPessoas = new ArrayList<>();
+
+        while (true) {
+            System.out.println("============================");
+            System.out.println("  Bem-vindo ao sistema IMC  ");
+            System.out.println("============================");
+            System.out.println("1 - Cadastrar");
+            System.out.println("2 - Listar");
+            System.out.println("3 - Excluir");
+            System.out.println("4 - Listar IMC > 27");
+            System.out.println("5 - Listar IMC < 18");
+            System.out.println("6 - Listar 18 <= IMC <= 22");
+            System.out.println("7 - Editar");
+            System.out.println("============================");
+            System.out.print("Digite uma opção: ");
+
+            int opcao = 0;
+            try {
+                opcao = entrada.nextInt();
+                entrada.nextLine();
+            } catch (Exception e) {
+                System.out.println("Digite apenas números de 1 a 7.");
+                entrada.nextLine();
+                continue;
+            }
+
+            switch (opcao) {
+
+                case MENU_CADASTRAR: {
+                    Pessoa novaPessoa = new Pessoa();
+
+                    // Nome
+                    while (true) {
+                        System.out.print("Nome: ");
+                        String nomeDigitado = entrada.nextLine();
+
+                        if (!nomeDigitado.matches("[a-zA-ZÀ-ú ]+")) {
+                            System.out.println("Digite apenas letras e espaços.");
+                        } else {
+                            novaPessoa.setNome(nomeDigitado);
+                            break;
+                        }
+                    }
+
+                    // Altura
+                    while (true) {
+                        try {
+                            System.out.print("Altura: ");
+                            String textoAltura = entrada.nextLine();
+                            textoAltura = textoAltura.replace(",", ".");
+                            double alturaDigitada = Double.parseDouble(textoAltura);
+
+                            if (alturaDigitada < 1.20 || alturaDigitada > 2.52) {
+                                System.out.println("Altura deve estar entre 1.20 e 2.52.");
+                                continue;
+                            }
+
+                            novaPessoa.setAltura(alturaDigitada);
+                            break;
+
+                        } catch (Exception e) {
+                            System.out.println("Digite um valor numérico válido para altura.");
+                        }
+                    }
+
+                    // Peso (AGORA ACEITA VÍRGULA)
+                    while (true) {
+                        try {
+                            System.out.print("Peso: ");
+                            String textoPeso = entrada.nextLine();
+                            textoPeso = textoPeso.replace(",", ".");
+                            double pesoDigitado = Double.parseDouble(textoPeso);
+
+                            if (pesoDigitado < 30 || pesoDigitado > 400) {
+                                System.out.println("Peso deve estar entre 30kg e 400kg.");
+                                continue;
+                            }
+
+                            novaPessoa.setPeso(pesoDigitado);
+                            break;
+
+                        } catch (Exception e) {
+                            System.out.println("Digite um valor numérico válido para peso.");
+                        }
+                    }
+
+                    // CPF
+                    while (true) {
+                        System.out.print("CPF (11 números): ");
+                        String cpfDigitado = entrada.nextLine();
+
+                        if (!cpfDigitado.matches("\\d{11}")) {
+                            System.out.println("CPF inválido.");
+                            continue;
+                        }
+
+                        boolean jaExiste = false;
+                        for (Pessoa p : listaPessoas) {
+                            if (p.getCpf().equals(cpfDigitado)) {
+                                jaExiste = true;
+                                break;
+                            }
+                        }
+
+                        if (jaExiste) {
+                            System.out.println("Esse CPF já está cadastrado.");
+                        } else {
+                            novaPessoa.setCpf(cpfDigitado);
+                            break;
+                        }
+                    }
+
+                    listaPessoas.add(novaPessoa);
+                    System.out.println("Cadastro concluído!");
+                    break;
+                }
+
+                case MENU_LISTAR: {
+                    if (listaPessoas.isEmpty()) {
+                        System.out.println("Nenhuma pessoa cadastrada.");
+                    } else {
+                        for (Pessoa p : listaPessoas) {
+                            p.imprimir();
+                        }
+                    }
+                    break;
+                }
+
+                case MENU_EXCLUIR: {
+                    System.out.print("CPF da pessoa que deseja excluir: ");
+                    String cpfDigitado = entrada.nextLine();
+
+                    boolean removida = false;
+                    for (int i = 0; i < listaPessoas.size(); i++) {
+                        if (listaPessoas.get(i).getCpf().equals(cpfDigitado)) {
+                            listaPessoas.remove(i);
+                            removida = true;
+                            System.out.println("Pessoa removida.");
+                            break;
+                        }
+                    }
+
+                    if (!removida) {
+                        System.out.println("CPF não encontrado.");
+                    }
+                    break;
+                }
+
+                case MENU_LISTAR_IMC_ACIMA_27: {
+                    for (Pessoa p : listaPessoas) {
+                        if (p.imc() > 27) p.imprimir();
+                    }
+                    break;
+                }
+
+                case MENU_LISTAR_IMC_ABAIXO_18: {
+                    for (Pessoa p : listaPessoas) {
+                        if (p.imc() < 18) p.imprimir();
+                    }
+                    break;
+                }
+
+                case MENU_LISTAR_IMC_ENTRE_18_22: {
+                    for (Pessoa p : listaPessoas) {
+                        if (p.imc() >= 18 && p.imc() <= 22) p.imprimir();
+                    }
+                    break;
+                }
+
+                case MENU_EDITAR: {
+                    System.out.print("CPF da pessoa que deseja editar: ");
+                    String cpfBusca = entrada.nextLine();
+
+                    Pessoa pessoaAlvo = null;
+                    for (Pessoa p : listaPessoas) {
+                        if (p.getCpf().equals(cpfBusca)) {
+                            pessoaAlvo = p;
+                            break;
+                        }
+                    }
+
+                    if (pessoaAlvo == null) {
+                        System.out.println("CPF não encontrado.");
+                        break;
+                    }
+
+                    System.out.print("Novo nome (ENTER para manter): ");
+                    String novoNome = entrada.nextLine();
+                    if (!novoNome.isEmpty()) pessoaAlvo.setNome(novoNome);
+
+                    while (true) {
+                        try {
+                            System.out.print("Nova altura (ou 0 para manter): ");
+                            String txt = entrada.nextLine();
+                            txt = txt.replace(",", ".");
+                            double novaAltura = Double.parseDouble(txt);
+
+                            if (novaAltura == 0) break;
+                            if (novaAltura >= 1.20 && novaAltura <= 2.52) {
+                                pessoaAlvo.setAltura(novaAltura);
+                                break;
+                            } else {
+                                System.out.println("Altura inválida.");
+                            }
+
+                        } catch (Exception e) {
+                            System.out.println("Valor inválido.");
+                        }
+                    }
+
+                    while (true) {
+                        try {
+                            System.out.print("Novo peso (ou 0 para manter): ");
+                            String txt = entrada.nextLine();
+                            txt = txt.replace(",", ".");
+                            double novoPeso = Double.parseDouble(txt);
+
+                            if (novoPeso == 0) break;
+                            if (novoPeso >= 30 && novoPeso <= 400) {
+                                pessoaAlvo.setPeso(novoPeso);
+                                break;
+                            } else {
+                                System.out.println("Peso inválido.");
+                            }
+
+                        } catch (Exception e) {
+                            System.out.println("Valor inválido.");
+                        }
+                    }
+
+                    System.out.println("Dados atualizados.");
+                    break;
+                }
+
+                default:
+                    System.out.println("Opção inválida.");
+            }
+
+            System.out.println();
+            System.out.println();
+        }
+    }
+}
