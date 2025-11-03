@@ -83,7 +83,7 @@ public class Main {
                         }
                     }
 
-                    // Peso (AGORA ACEITA VÍRGULA)
+                    // Peso 
                     while (true) {
                         try {
                             System.out.print("Peso: ");
